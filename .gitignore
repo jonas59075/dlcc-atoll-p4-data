@@ -1,0 +1,25 @@
+# Temporary analysis outputs
+*.tmp
+*.log
+*.tmp.*
+
+# Temporary working files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Editor artifacts
+.vscode/
+.idea/
+*.sublime-*
+
+# Archives (never commit raw tarballs)
+*.tar.gz
+*.tar
+*.zip
+
+# Build/cache
+.cache/
+node_modules/
+dist/

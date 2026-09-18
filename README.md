@@ -1,46 +1,71 @@
 # dlcc-atoll-p4-data
 
-Dedicated repository for P4 (Performance Recording) artifacts from DLCC ATOLL simulation benchmarks.
+Dediziertes Git-Repository für Versionierung und Archivierung von P4-Gate-Artefakten aus dem dlcc-atoll Projekt.
 
-## Purpose
+## Was ist P4-Gate?
 
-Stores playback recordings, frame-capture dumps, and profiling snapshots collected during multi-agent benchmark runs. Decoupled from production code to avoid cluttering the main repository with binary/large JSON datasets.
+P4-Gate ist der Messpunkt für Plane-Issue-Umsetzung durch Multi-Modell-AI-Agenten in der DLCC-Workspace. 
+Es erfasst Mitschnitte (Snapshots) vom initialen Issue-State über Branch-Erstellung, Code-Commits, PR-Submission bis zur finalen Plane-State-Transition.
 
-## Naming Schema
+P4-Gate-Daten ermöglichen:
+- **Cost-Vergleich:** Kosten/Token pro Agent-Modell (Claude 3.5 Sonnet vs. OpenAI o1 vs. Andere)
+- **Latency-Analyse:** Wall-Clock-Zeit vom Issue-Pickup bis zur Merge/Done
+- **Quality-Assessment:** Code-Review-Outcomes, Fehlerquoten, Rework-Zyklen
+- **Compliance-Audit:** Welcher Agent, wann, was committed — für Betriebshistorie
 
-### Files
-- **Timestamp-based**: `p4-<YYYY-MM-DD>T<HH-MM-SS>Z-<bench-id>-<descriptor>.jsonl`
-- **Examples**:
-  - `p4-2026-09-16T14-32-15Z-cc-run-001-frame-trace.jsonl`
-  - `p4-2026-09-16T14-32-15Z-oc-run-001-perf-counters.jsonl`
+## Dateiformat
 
-### Directories
+Jedes P4-Gate-Artefakt ist **JSON Lines** (`.jsonl`):
 ```
-p4-data/
-  └── <bench-id>/
-      ├── runs/
-      │   └── <run-id>/
-      │       ├── traces/
-      │       ├── counters/
-      │       └── metadata.json
+{"timestamp": "2026-09-18T14:23:45Z", "event": "issue_picked", "issue_id": "...", ...}
+{"timestamp": "2026-09-18T14:24:10Z", "event": "branch_created", "branch": "...", ...}
+{"timestamp": "2026-09-18T14:25:30Z", "event": "commit", "sha": "...", ...}
+...
 ```
 
-## Retention Policy
+Ein Artefakt pro Issue. Nicht komprimiert (Git handled Whitespace-Kompression).
 
-- **Keep**: Last 30 days of artifacts (rolling window)
-- **Archive**: Older artifacts tagged and moved to cold storage (external, not in this repo)
-- **Cleanup**: Automated via CI/CD or manual cleanup script every 30 days
+## Naming-Schema
 
-## Format
+```
+<PLANE_ID>-<ISSUE_SEQ>-<TITLE_SLUG>-<BENCH_PREFIX>.jsonl
+```
 
-All artifacts are JSON Lines (`.jsonl`), optionally gzipped (`.jsonl.gz`). No Git LFS — compression handles size.
+Beispiele:
+- `DLCCMVP-123-add-websocket-handler-cc.jsonl` (CC-Bench, Sonnet, Workspace ws-dlcc-cc)
+- `INFRA-456-fix-bridge-loop-oc.jsonl` (OC-Bench, OpenRouter-Multi, Workspace ws-dlcc-oc)
+- `BRIDGE-789-adagio-refactor.jsonl` (Production-Run, keine Bench-Suffix)
 
-## Access
+**Bench-Präfixe:**
+- `cc` → Claude Code Pipeline (Anthropic)
+- `oc` → OpenCode Pipeline (OpenRouter / Multi-Modell)
+- (keine Suffix) → Production-Läufe
 
-- CI/CD: Pulls artifacts for post-run analysis
-- Agentboard (AB): May render selected traces in dashboard
-- Bridge: Stores benchmark metadata and result summaries
+## Struktur im Repo
+
+```
+dlcc-atoll-p4-data/
+├── README.md (diese Datei)
+├── .gitignore
+├── 2026-09/ (Ordner nach Monat YYYY-MM)
+│   ├── 2026-09-18_cc_batch-001/ (Batch-Runs)
+│   │   ├── DLCCMVP-123-*.jsonl
+│   │   ├── INFRA-456-*.jsonl
+│   │   └── ...
+│   └── 2026-09-19_oc_batch-002/
+│       └── ...
+└── index.json (optional: Manifest aller Dateien + Metadaten)
+```
+
+## Revision & Retention
+
+- **Aufbewahrung:** Mind. 12 Monate (Audit-Trail für Betreiber)
+- **Git-Tiefe:** Linear, keine Rebases (Commit-SHA ist Beweismittel)
+- **Cleanup:** Manuell oder per Script — größere Batches nach 24 Monaten in ein Archiv-Tag und aus dem Repo raus
+
+## Zugriff
+
+Public Repository. Keine Credentials oder PII in Artefakten.
 
 ---
-
-Generated: 2026-09-16
+**Verwaltung:** Claudius Deployer | **Letzte Änderung:** 2026-09-18

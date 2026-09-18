@@ -1,25 +1,29 @@
-# Temporary analysis outputs
+# Temporary files
 *.tmp
 *.log
-*.tmp.*
-
-# Temporary working files
-.DS_Store
 *.swp
 *.swo
 *~
 
-# Editor artifacts
-.vscode/
+# OS
+.DS_Store
+Thumbs.db
+
+# Local editor state
 .idea/
-*.sublime-*
+.vscode/
+*.sublime-workspace
 
-# Archives (never commit raw tarballs)
-*.tar.gz
-*.tar
-*.zip
-
-# Build/cache
+# Build & cache
 .cache/
+*.pyc
+__pycache__/
 node_modules/
-dist/
+
+# Environment
+.env
+.env.local
+
+# Archives (use git tags for retention, not files)
+*.tar.gz
+*.zip

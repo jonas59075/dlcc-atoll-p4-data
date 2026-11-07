@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__MCP-Homeassistant",
+      "mcp__MCP-Paperless",
+      "mcp__MCP-Plane",
+      "mcp__MCP-Unifi",
+      "mcp__MCP-Shell",
+      "Bash",
+      "WebFetch",
+      "WebSearch"
+    ]
+  }
+}
